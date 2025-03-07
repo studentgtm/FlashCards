@@ -1,5 +1,6 @@
 const flashcards = [
     { article: 'der', word: 'Konsonant', plural: 'Konsonanten', translation: 'souhláska' },
+    { word: 'feige', translation: 'zbabělý' }
     // Add more words here
 ];
 
