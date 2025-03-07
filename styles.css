@@ -16,7 +16,18 @@ body {
     margin-bottom: 20px;
 }
 
+input {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
 button {
     padding: 10px 20px;
+    font-size: 16px;
+}
+
+#feedback {
+    margin-top: 10px;
     font-size: 16px;
 }
