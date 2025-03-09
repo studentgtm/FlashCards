@@ -8,11 +8,18 @@ body {
     margin: 0;
 }
 
-#flashcard-container {
+#welcome-screen, #flashcard-container, #results-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     border: 1px solid #ccc;
     padding: 20px;
     text-align: center;
     width: 300px;
+    margin-bottom: 20px;
+}
+
+#flashcard {
     margin-bottom: 20px;
 }
 
@@ -22,12 +29,65 @@ input {
     margin-bottom: 10px;
 }
 
+input[type="text"] {
+    margin-bottom: 10px;
+}
+
 button {
     padding: 10px 20px;
     font-size: 16px;
+    margin: 5px;
 }
 
 #feedback {
     margin-top: 10px;
     font-size: 16px;
 }
+
+.correct {
+    color: green;
+    font-weight: bold;
+}
+
+.incorrect {
+    color: red;
+    font-weight: bold;
+}
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Flashcards</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="welcome-screen">
+        <h1>Welcome to German Flashcards</h1>
+        <button id="start-test-btn">Start Test</button>
+    </div>
+    <div id="flashcard-container" style="display: none;">
+        <div id="flashcard" style="margin-bottom: 20px;"></div>
+        <div id="article-container" style="display: none;">
+            <input type="text" id="user-article" placeholder="Article">
+        </div>
+        <input type="text" id="user-input" placeholder="German Translation">
+        <div id="plural-container" style="display: none;">
+            <input type="text" id="user-plural" placeholder="Plural">
+        </div>
+        <button id="submit-btn">Submit</button>
+        <button id="next-btn" style="display: none;">Next</button>
+        <div id="result"></div>
+    </div>
+    <div id="results-screen" style="display: none;">
+        <h2>Results</h2>
+        <button id="show-correct-btn">Show Correct Answers</button>
+        <button id="show-incorrect-btn">Show Incorrect Answers</button>
+        <button id="retry-incorrect-btn">Retry Incorrect Answers</button>
+        <div id="correct-answers" style="display: none;"></div>
+        <div id="incorrect-answers" style="display: none;"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
