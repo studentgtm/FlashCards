@@ -3,13 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulary Quiz</title>
+    <title>German Flashcards</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a6fa5">
 </head>
 <body>
     <div id="welcome-screen">
-        <h1>Welcome to Vocabulary Quiz</h1>
+        <h1>Welcome to German Flashcards</h1>
         <button id="start-test-btn">Start Test</button>
+        <button id="start-mc-quiz-btn">Start Multiple-Choice Quiz</button>
+        <h2>Add New Word</h2>
+        <form id="add-word-form">
+            <input type="text" id="new-article" placeholder="Article (optional)">
+            <input type="text" id="new-word" placeholder="Word" required>
+            <input type="text" id="new-plural" placeholder="Plural (optional)">
+            <input type="text" id="new-translation" placeholder="Translation" required>
+            <select id="new-wordclass" required>
+                <option value="sustantive">Sustantive</option>
+                <option value="verb">Verb</option>
+                <option value="adjective">Adjective</option>
+                <option value="adverb">Adverb</option>
+                <option value="phrase">Phrase</option>
+            </select>
+            <button type="submit">Add Word</button>
+        </form>
     </div>
     <div id="flashcard-container" style="display: none;">
         <div id="flashcard" style="margin-bottom: 20px;"></div>
@@ -24,7 +42,16 @@
         <button id="next-btn" style="display: none;">Next</button>
         <button id="exit-btn" style="display: none;">Exit</button>
         <button id="retry-btn" style="display: none;">Retry Incorrect</button>
+        <button id="restart-btn" style="display: none;">Restart</button>
         <div id="result"></div>
+    </div>
+    <div id="mc-quiz-container" style="display: none;">
+        <div id="mc-question" style="margin-bottom: 20px;"></div>
+        <div id="mc-options"></div>
+        <button id="mc-next-btn" style="display: none;">Next</button>
+        <button id="mc-retry-btn" style="display: none;">Retry</button>
+        <button id="mc-exit-btn">Exit</button>
+        <button id="mc-dictionary-btn">Dictionary</button>
     </div>
     <div id="results-screen" style="display: none;">
         <h2>Results</h2>
@@ -32,9 +59,21 @@
         <button id="show-incorrect-btn">Show Incorrect Answers</button>
         <button id="retry-incorrect-btn">Retry Incorrect Answers</button>
         <button id="exit-results-btn">Exit</button>
+        <button id="restart-results-btn">Restart</button>
         <div id="correct-answers" style="display: none;"></div>
         <div id="incorrect-answers" style="display: none;"></div>
     </div>
     <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+    </script>
 </body>
 </html>

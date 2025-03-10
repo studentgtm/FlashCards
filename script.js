@@ -102,6 +102,7 @@ function displayCard() {
     document.getElementById('next-btn').style.display = 'none';
     document.getElementById('exit-btn').style.display = 'inline';
     document.getElementById('retry-btn').style.display = 'none';
+    document.getElementById('restart-btn').style.display = 'inline';
 }
 
 function normalizeInput(input) {
@@ -181,14 +182,114 @@ function retryIncorrectAnswers() {
     displayCard();
 }
 
+function restartTest() {
+    currentIndex = 0;
+    correctAnswers = [];
+    incorrectAnswers = [];
+    shuffle(flashcards);
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('flashcard-container').style.display = 'block';
+    displayCard();
+}
+
 function exitToWelcomeScreen() {
     document.getElementById('flashcard-container').style.display = 'none';
     document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('mc-quiz-container').style.display = 'none';
     document.getElementById('welcome-screen').style.display = 'block';
     currentIndex = 0;
     correctAnswers = [];
     incorrectAnswers = [];
 }
+
+function addNewWord(event) {
+    event.preventDefault();
+    const newArticle = document.getElementById('new-article').value.trim();
+    const newWord = document.getElementById('new-word').value.trim();
+    const newPlural = document.getElementById('new-plural').value.trim();
+    const newTranslation = document.getElementById('new-translation').value.trim();
+    const newWordclass = document.getElementById('new-wordclass').value;
+
+    const newFlashcard = {
+        article: newArticle || undefined,
+        word: newWord,
+        plural: newPlural || undefined,
+        translation: newTranslation,
+        wordclass: newWordclass
+    };
+
+    flashcards.push(newFlashcard);
+
+    // Clear the form
+    document.getElementById('add-word-form').reset();
+}
+
+function startMCQuiz() {
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('mc-quiz-container').style.display = 'block';
+    shuffle(flashcards);
+    displayMCQuestion();
+}
+
+function displayMCQuestion() {
+    if (currentIndex >= flashcards.length) {
+        showResults();
+        return;
+    }
+
+    currentCard = flashcards[currentIndex];
+    const questionDiv = document.getElementById('mc-question');
+    const optionsDiv = document.getElementById('mc-options');
+
+    questionDiv.textContent = currentCard.translation;
+    optionsDiv.innerHTML = '';
+
+    const options = [currentCard.word];
+    while (options.length < 4) {
+        const randomCard = flashcards[Math.floor(Math.random() * flashcards.length)];
+        if (!options.includes(randomCard.word)) {
+            options.push(randomCard.word);
+        }
+    }
+
+    shuffle(options);
+
+    options.forEach(option => {
+        const optionButton = document.createElement('button');
+        optionButton.textContent = option;
+        optionButton.addEventListener('click', () => {
+            if (option === currentCard.word) {
+                optionButton.style.backgroundColor = 'green';
+                correctAnswers.push(currentCard);
+                document.getElementById('mc-next-btn').style.display = 'inline';
+                document.getElementById('mc-retry-btn').style.display = 'none';
+
+                // Display the complete word including the article and plural in cursive
+                const correctAnswerDiv = document.createElement('div');
+                correctAnswerDiv.innerHTML = `<i>${currentCard.article ? currentCard.article + ' ' : ''}${currentCard.word} ${currentCard.plural ? '(' + currentCard.plural + ')' : ''}</i>`;
+                optionsDiv.appendChild(correctAnswerDiv);
+            } else {
+                optionButton.style.backgroundColor = 'red';
+                incorrectAnswers.push(currentCard);
+                document.getElementById('mc-next-btn').style.display = 'none';
+                document.getElementById('mc-retry-btn').style.display = 'inline';
+            }
+            document.querySelectorAll('#mc-options button').forEach(btn => {
+                btn.disabled = true;
+            });
+        });
+        optionsDiv.appendChild(optionButton);
+    });
+
+    document.getElementById('mc-next-btn').style.display = 'none';
+    document.getElementById('mc-retry-btn').style.display = 'none';
+}
+
+// Add event listener for the Dictionary button
+document.getElementById('mc-dictionary-btn').addEventListener('click', () => {
+    const dictionaryUrl = `https://slovnik.seznam.cz/preklad/nemecky_cesky/${currentCard.word}`;
+    window.open(dictionaryUrl, '_blank');
+});
 
 document.getElementById('start-test-btn').addEventListener('click', () => {
     document.getElementById('welcome-screen').style.display = 'none';
@@ -214,6 +315,62 @@ document.getElementById('exit-results-btn').addEventListener('click', exitToWelc
 document.getElementById('show-correct-btn').addEventListener('click', showCorrectAnswers);
 document.getElementById('show-incorrect-btn').addEventListener('click', showIncorrectAnswers);
 document.getElementById('retry-incorrect-btn').addEventListener('click', retryIncorrectAnswers);
+document.getElementById('restart-btn').addEventListener('click', restartTest);
+document.getElementById('restart-results-btn').addEventListener('click', restartTest);
+document.getElementById('add-word-form').addEventListener('submit', addNewWord);
+document.getElementById('start-mc-quiz-btn').addEventListener('click', startMCQuiz);
+document.getElementById('mc-next-btn').addEventListener('click', () => {
+    currentIndex++;
+    displayMCQuestion();
+});
+document.getElementById('mc-exit-btn').addEventListener('click', exitToWelcomeScreen);
+document.getElementById('mc-retry-btn').addEventListener('click', displayMCQuestion);
 
 // Initialize the first card
 displayCard();
+// Wait for the DOM to be fully loaded before attaching event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener for the Dictionary button
+    document.getElementById('mc-dictionary-btn').addEventListener('click', () => {
+        const dictionaryUrl = `https://slovnik.seznam.cz/preklad/nemecky_cesky/${currentCard.word}`;
+        window.open(dictionaryUrl, '_blank');
+    });
+
+    document.getElementById('start-test-btn').addEventListener('click', () => {
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('flashcard-container').style.display = 'block';
+        shuffle(flashcards);
+        displayCard();
+    });
+
+    document.getElementById('submit-btn').addEventListener('click', checkAnswer);
+    document.getElementById('next-btn').addEventListener('click', () => {
+        document.getElementById('result').textContent = "";
+        currentIndex++;
+        displayCard();
+    });
+
+    document.getElementById('retry-btn').addEventListener('click', () => {
+        document.getElementById('result').textContent = "";
+        displayCard();
+    });
+
+    document.getElementById('exit-btn').addEventListener('click', exitToWelcomeScreen);
+    document.getElementById('exit-results-btn').addEventListener('click', exitToWelcomeScreen);
+    document.getElementById('show-correct-btn').addEventListener('click', showCorrectAnswers);
+    document.getElementById('show-incorrect-btn').addEventListener('click', showIncorrectAnswers);
+    document.getElementById('retry-incorrect-btn').addEventListener('click', retryIncorrectAnswers);
+    document.getElementById('restart-btn').addEventListener('click', restartTest);
+    document.getElementById('restart-results-btn').addEventListener('click', restartTest);
+    document.getElementById('add-word-form').addEventListener('submit', addNewWord);
+    document.getElementById('start-mc-quiz-btn').addEventListener('click', startMCQuiz);
+    document.getElementById('mc-next-btn').addEventListener('click', () => {
+        currentIndex++;
+        displayMCQuestion();
+    });
+    document.getElementById('mc-exit-btn').addEventListener('click', exitToWelcomeScreen);
+    document.getElementById('mc-retry-btn').addEventListener('click', displayMCQuestion);
+
+    // The welcome screen should be visible by default, so we don't need to initialize the first card right away
+    // displayCard();
+});
